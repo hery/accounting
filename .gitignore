@@ -99,3 +99,9 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Bank data
+data.csv
+
+# Visual code
+.vscode
