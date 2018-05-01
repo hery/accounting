@@ -3,54 +3,7 @@ import csv
 from datetime import datetime
 from prettyprint import pp
 
-
-CATEGORIES = {
-    'food': [
-        'WHOLE FOODS MARKET',
-        'WAITROSE',
-        'SAINSBURYS',
-        'CHOSEN BUN',
-        'Koko',
-        'TESCO',
-        'DINER'
-    ],
-    'coffee': [
-        'Chairs and Cof',
-        'SUMUP *SHOT ESPRES'
-    ],
-    
-    'drinks': [
-        'CAMDEN HEAD',
-        'MALTHOUSE',
-        'VINOTECA',
-        'MITRE'
-    ],
-    'transport': [
-        'TFL.GOV.UK/CP'
-    ],
-    'amazon': [
-        'AMAZON'
-    ],
-    'gear': [
-        'ARGOS',
-        'FSPRG.UK',
-        'WILKO',
-        'RUFFIANS',
-    ],
-    'yoga': [
-        'YOGASHALA',
-        'THE POWER YOGA',
-        'THE SPORTS EDIT',
-    ],
-    'rent': [
-        'SHAREDPADSLT'
-    ],
-    'fun': [
-        'RIOTGAM'
-    ]
-}
-UNCATEGORIZED_KEY = 'other'
-
+from categories import CATEGORIES, UNCATEGORIZED_KEY
 
 def convert_date(date):
     return datetime.strptime(date, '%d/%m/%Y')
@@ -141,13 +94,13 @@ if __name__ == "__main__":
     transactions = _transactions()
     for month in range(0, 13):
         transactions = _transactions_per_month(transactions, month)
+        income = _income_for_transactions(transactions)
+        expenses = _expenses_for_transactions(transactions)
         if len(transactions) < 1:
             continue
-        print("Income for month %s: %s" % (
-            month,
-            _income_for_transactions(transactions),
-            )
-        )
+        print("Income for month %s: %s" % (month, income))
+        print("Expenses for month %s: %s" % (month, expenses))
+        print("Net for month: %s" % (income - expenses))
         print('===========')
         pp("From %s to %s" % (transactions[-1]['date'], transactions[0]['date']))
         print("Parsing %s transactions for month %s" % (len(transactions), month))
