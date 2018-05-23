@@ -1,7 +1,8 @@
 
 import csv
 from datetime import datetime
-from prettyprint import pp
+import matplotlib
+import matplotlib.pyplot as plt
 
 from categories import CATEGORIES, UNCATEGORIZED_KEY
 
@@ -89,7 +90,8 @@ def _income_for_transactions(transactions):
             result += amount
     return abs(result)
 
-if __name__ == "__main__":
+
+def _print_summary():
     print('===========')
     transactions = _transactions()
     for month in range(0, 13):
@@ -102,13 +104,54 @@ if __name__ == "__main__":
         print("Expenses for month %s: %s" % (month, expenses))
         print("Net for month: %s" % (income - expenses))
         print('===========')
-        pp("From %s to %s" % (transactions[-1]['date'], transactions[0]['date']))
         print("Parsing %s transactions for month %s" % (len(transactions), month))
         transactions = _transactions_per_categories(transactions)
-        for key, category_transactions in transactions.iteritems():
+        for key, category_transactions in transactions.items():
             print("Expenses for category %s with %s transactions: %s" % (
                 key,
                 len(category_transactions),
                 _expenses_for_transactions(category_transactions)))
         print('===========')
+
+        
+def _graph_summary(start_month=0, num_months=12):
+    transactions = _transactions()
+    months = ["Tot",
+              "Jan",
+              "Feb",
+              "Mar",
+              "Apr",
+              "May",
+              "Jun",
+              "Jul",
+              "Aug",
+              "Sep",
+              "Oct",
+              "Nov",
+              "Dec"]
+    expenses = [0]*13
+    incomes = [0]*13
+    nets = [0]*13
+    for index, month in enumerate(months):
+        transactions_for_month = _transactions_per_month(transactions, index)
+        expenses[index] = int(_expenses_for_transactions(transactions_for_month))
+        incomes[index] = int(_income_for_transactions(transactions_for_month))
+        if (index == 5):
+            # End of months salary + projecting expenses
+            incomes[index] += 3100
+            expenses[index] += 1000
+        nets[index] = int(incomes[index] - expenses[index])
+
+                
+
+    plt.plot(months[start_month:num_months], expenses[start_month:num_months], label='Expenses')
+    plt.plot(months[start_month:num_months], incomes[start_month:num_months], label='Income')
+    plt.plot(months[start_month:num_months], nets[start_month:num_months], label='Net')
+    plt.legend()
+    plt.show()
+    
+
+if __name__ == "__main__":
+    _print_summary()
+    _graph_summary(start_month=1, num_months=6)
 
